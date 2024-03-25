@@ -5,42 +5,58 @@
 
 Невеликий [Telegram bot](https://core.telegram.org/bots/api) що працює у Docker контейнері і потребує мінімальну конфігурацію. Джерелом даних є сервер даних [Сервер даних JAAM](http://alerts.net.ua/).
 
-## Prerequisites
-- Docker engine on x86_64 host
-- A [Telegram bot](https://core.telegram.org/bots#6-botfather) and its token (see [tutorial](https://core.telegram.org/bots/tutorial#obtain-your-bot-token))
-- Chat ID
+## Що потрібно для роботи?
+- Docker engine встановлений на хост з x86_64
+- [Телеграм-бот](https://core.telegram.org/bots#6-botfather) та його токен (дивись [керівництво](https://core.telegram.org/bots/tutorial#obtain-your-bot-token))
+- Chat ID чату, куди бот присиатиме повідомлення
 
-## Configuration
-Just provide `BOT_TOKEN` and `CHAT_ID` in the `.env` file, you may use `.env.example` as example. Alnetratively you may provide `BOT_TOKEN` as enviromental variable.
+## Налаштування
+Просто надай `BOT_TOKEN` та `CHAT_ID` у файлі `.env`, можеш використовувати `.env.example` як приклад.
 
 
-## Running
-### Build own Docker image
+## Запуск
+### Збудуй власний імедж
 
-Clone the repository and navigate to the project directory:
+Клонуй цей репозиторій:
 
 ```shell
-git clone https://github.com/yurnov/ua-explosion-notification-bot
+git https://github.com/yurnov/ua-explosion-notification-bot.git
 cd ua-explosion-notification-bot
 ```
 
-Build image
+збудуй імедж
 
 ```shell
 docker build . -t explosion-notification-bot
 ```
 
-Run container
+Запускай
 
 ```shell
 docker run --rm -d --env-file .env explosion-notification-bot
 ```
 
-## Disclaimer
-Це персональний проект, робота бота та актуальність даних не гарантуються.
+Не забудь перед запуском відредагувати `.env` файл!
+
+### Запускай готовий імедж
+
+Відредагуй `.env` (дивись секцію налаштувань) та запускай уже збудований імедж:
+
+```shell
+docker pull ghcr.io/yurnov/explosion-notifier:latest
+docker run -d --rm --env-file .env ghcr.io/yurnov/explosion-notifier:latest
+```
+
+Можеш використовувати теги `latest` для останньої випущеної версії, чи `dev` для версії, що розробляється.
+
+
+## Перестороги
+Це персональний проект, робота бота та актуальність даних не гарантуються. Не варто сприймати повідомлення для важливих для життя рішень!
 
 ## Подяка
-- https://github.com/J-A-A-M/ukraine_alarm_map
+Пану @v00g100skr та його [JAAM - Just another alerts map](https://github.com/J-A-A-M/ukraine_alarm_map) за ідею та сервер даних.
+
+Але головна подяка — ЗСУ!, можете і ви подякувати їм [тут](https://koloua.com/donate)
 
 ## License
 Files included in this repository is avaliable under terms of [MIT license](LICENSE). external dependency, such as [requests](https://github.com/psf/requests) is avaliable under their own licenses.

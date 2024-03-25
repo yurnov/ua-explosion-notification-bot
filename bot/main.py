@@ -77,6 +77,8 @@ regions_gram_case = {
     "Хмельницька область": "Хмельницькій області",
 }
 
+MESSAGE = "💥За даними ЗМІ, зафіксовані вибухи у "
+
 if not TOKEN or not CHAT_ID:
     logger.error(
         "TOKEN or CHAT_ID is not defined in .env file or environment variables"
@@ -88,10 +90,6 @@ if not URL:
         "URL is not defined in .env file, using a default URL http://alerts.net.ua/explosives_statuses_v2.json"
     )
     URL = "http://alerts.net.ua/explosives_statuses_v2.json"
-
-if not MESSAGE:
-    logger.warning("MESSAGE is not defined in .env file, using a default message")
-    MESSAGE = "Йобанарусня!\n💥За даними ЗМІ, зафіксовані вибухи у "
 
 
 if not REGION_LIST:
@@ -161,9 +159,10 @@ def main():
                         region
                     ):
 
-                        message += f"{regions_gram_case.get(region, region)}, час {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
+                        message += f"{regions_gram_case.get(region, region)} о {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
+                    message += "\nЙобанарусня!"3
                     send_message(message)
 
                 last_data = data

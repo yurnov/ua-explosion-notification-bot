@@ -130,7 +130,9 @@ def main():
                 message = MESSAGE
 
                 for region, date in states.items():
-                    if region in REGION_LIST and date != last_id:
+                    if region in REGION_LIST and date != last_data["states"].get(
+                        region
+                    ):
                         message += f"{region}: {datetime.strptime(date, '%Y-%m-%dT%H:%M:%S+00:00').strftime('%Y-%m-%d %H:%M')}\n"
 
                 if message != MESSAGE:

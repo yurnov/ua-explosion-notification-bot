@@ -161,7 +161,7 @@ def main():
                         region
                     ):
 
-                        message += f"{regions_gram_case.get(region, region)}, час {datetime.strptime(date, '%Y-%m-%dT%H:%M:%S+00:00').strftime(%H:%M')}\n"
+                        message += f"{regions_gram_case.get(region, region)}, час {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
                     message += "\n💥Будьте обережні!"

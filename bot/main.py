@@ -109,6 +109,8 @@ if not REGION_LIST:
         "Львівська область",
         "Волинська область",
     ]
+else:
+    REGION_LIST = [region.strip('"') for region in REGION_LIST]
 
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")

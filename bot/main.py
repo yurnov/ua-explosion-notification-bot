@@ -44,7 +44,6 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 URL = os.getenv("URL")
-MESSAGE = os.getenv("MESSAGE")
 REGION_LIST = os.getenv("REGION_LIST")
 
 """

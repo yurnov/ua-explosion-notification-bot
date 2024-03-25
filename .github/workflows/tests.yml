@@ -30,10 +30,14 @@ jobs:
         run: |
           python -m pip install pylint==3.0.3 black==24.3.0
 
-      # - name: Lint Python code
-      #   run: |
-      #     black --check --skip-string-normalization --line-length 120 bot
-      #     find . -name *.py -exec pylint --disable=R,C,W1203 '{}' \;
+      - name: Lint Python code with black
+        run: |
+          black --check --skip-string-normalization --line-length 120 bot
+
+      - name: Lint Python code with Pylint
+        run: |
+          find . -name *.py -exec pylint --disable=R,C,W1203 '{}' \;
+
 
       - name: Lint Dockerfile with hadolint
         uses: hadolint/hadolint-action@v2.1.0

@@ -6,7 +6,8 @@ import requests
 import os
 from dotenv import load_dotenv
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 
 """
 This is a simple telegram bot that every 30 secound get API http://alerts.net.ua/explosives_statuses_v2.json and send
@@ -45,6 +46,7 @@ TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 URL = os.getenv("URL")
 REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") else None
+TIMEZONE = os.getenv("TIMEZONE")
 
 """
 Full list of regions:
@@ -112,8 +114,15 @@ if not REGION_LIST:
 else:
     REGION_LIST = [region.strip('"') for region in REGION_LIST]
 
+if not TIMEZONE:
+    logger.warning(
+        "TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev"
+    )
+    TIMEZONE = "Europe/Kiev"
+
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
+
 
 def get_data():
     try:
@@ -162,7 +171,10 @@ def main():
                         region
                     ):
                         logger.info(f"Explosion in region: {region}, date: {date}")
-                        message += f"{regions_gram_case.get(region, region)} о {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
+
+                        message += f"{regions_gram_case.get(region, region)} о {datetime\
+                                    .strptime(date,'%Y-%m-%dT%H:%M:%S+00:00')\
+                                    .replace(tzinfo=timezone.utc).astimezone(TIMEZONE).strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
                     message += "\nЙобанарусня!"

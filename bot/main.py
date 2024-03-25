@@ -91,7 +91,7 @@ if not URL:
 
 if not MESSAGE:
     logger.warning("MESSAGE is not defined in .env file, using a default message")
-    MESSAGE = "Йобанарусня!\n\nЗа даними ЗМІ, зафіксовані вибухи у "
+    MESSAGE = "Йобанарусня!\n💥За даними ЗМІ, зафіксовані вибухи у "
 
 
 if not REGION_LIST:
@@ -164,7 +164,6 @@ def main():
                         message += f"{regions_gram_case.get(region, region)}, час {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
-                    message += "\n💥Будьте обережні!"
                     send_message(message)
 
                 last_data = data

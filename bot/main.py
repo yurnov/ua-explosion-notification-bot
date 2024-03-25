@@ -161,7 +161,7 @@ def main():
                         message += f"{regions_gram_case.get(region, region)} о {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
-                    message += "\nЙобанарусня!"3
+                    message += "\nЙобанарусня!"
                     send_message(message)
 
                 last_data = data

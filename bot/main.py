@@ -44,7 +44,7 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 URL = os.getenv("URL")
-REGION_LIST = os.getenv("REGION_LIST")
+REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") else None
 
 """
 Full list of regions:
@@ -110,6 +110,8 @@ if not REGION_LIST:
         "Волинська область",
     ]
 
+logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
+logger.info(f"Following regions will be monitored: {REGION_LIST}")
 
 def get_data():
     try:
@@ -157,7 +159,7 @@ def main():
                     if region in REGION_LIST and date != last_data["states"].get(
                         region
                     ):
-
+                        logger.info(f"Explosion in region: {region}, date: {date}")
                         message += f"{regions_gram_case.get(region, region)} о {datetime.strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').strftime('%H:%M')}\n"
 
                 if message != MESSAGE:

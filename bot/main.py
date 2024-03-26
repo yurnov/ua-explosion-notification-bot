@@ -6,7 +6,7 @@ import requests
 import os
 from dotenv import load_dotenv
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 
 """
@@ -118,7 +118,7 @@ logger.info(f"Following regions will be monitored: {REGION_LIST}")
 
 def get_data():
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, timeout=15)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while getting data: {e}")
@@ -129,7 +129,7 @@ def get_data():
 def send_message(text):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=20)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while sending message: {e}")

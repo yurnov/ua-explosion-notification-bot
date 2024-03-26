@@ -36,9 +36,7 @@ Bot don't use telegram-python lib, just pure API call to telegram API.
 
 """
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -81,9 +79,7 @@ regions_gram_case = {
 MESSAGE = "💥За даними ЗМІ, зафіксовані вибухи у "
 
 if not TOKEN or not CHAT_ID:
-    logger.error(
-        "TOKEN or CHAT_ID is not defined in .env file or environment variables"
-    )
+    logger.error("TOKEN or CHAT_ID is not defined in .env file or environment variables")
     exit()
 
 if not URL:
@@ -94,9 +90,7 @@ if not URL:
 
 
 if not REGION_LIST:
-    logger.warning(
-        "REGION_LIST is not defined in .env file, using a default list of regions"
-    )
+    logger.warning("REGION_LIST is not defined in .env file, using a default list of regions")
     # List of regions that bot will send message if date is changed
     REGION_LIST = [
         "Сумська область",
@@ -115,9 +109,7 @@ else:
     REGION_LIST = [region.strip('"') for region in REGION_LIST]
 
 if not TIMEZONE:
-    logger.warning(
-        "TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev"
-    )
+    logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev")
     TIMEZONE = "Europe/Kiev"
 
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
@@ -135,9 +127,7 @@ def get_data():
 
 
 def send_message(text):
-    url = (
-        f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
-    )
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -167,9 +157,7 @@ def main():
                 message = MESSAGE
 
                 for region, date in states.items():
-                    if region in REGION_LIST and date != last_data["states"].get(
-                        region
-                    ):
+                    if region in REGION_LIST and date != last_data["states"].get(region):
                         logger.info(f"Explosion in region: {region}, date: {date}")
 
                         message += f"{regions_gram_case.get(region, region)} о {datetime\

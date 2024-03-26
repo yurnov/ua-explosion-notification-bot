@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 import time
 from datetime import datetime, timedelta
-from pytz import timezone
+import pytz
 
 """
 This is a simple telegram bot that every 30 secound get API http://alerts.net.ua/explosives_statuses_v2.json and send
@@ -173,8 +173,8 @@ def main():
                         logger.info(f"Explosion in region: {region}, date: {date}")
 
                         message += f"{regions_gram_case.get(region, region)} о {datetime\
-                                    .strptime(date,'%Y-%m-%dT%H:%M:%S+00:00')\
-                                    .replace(tzinfo=timezone.utc).astimezone(TIMEZONE).strftime('%H:%M')}\n"
+                                        .strptime(date,'%Y-%m-%dT%H:%M:%S+00:00').replace(tzinfo=pytz.utc)\
+                                        .astimezone(tz=pytz.timezone(TIMEZONE)).strftime('%H:%M')}\n"
 
                 if message != MESSAGE:
                     message += "\nЙобанарусня!"

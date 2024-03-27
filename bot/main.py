@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import time
 from datetime import datetime
 import pytz
+import urllib.parse
 
 """
 This is a simple telegram bot that every 30 secound get API http://alerts.net.ua/explosives_statuses_v2.json and send
@@ -46,6 +47,7 @@ URL = os.getenv("URL")
 REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") else None
 TIMEZONE = os.getenv("TIMEZONE")
 SLIENT = os.getenv("SLIENT")
+MAP = os.getenv("MAP")
 
 """
 Full list of regions:
@@ -119,6 +121,12 @@ if not SLIENT or SLIENT.lower() not in ["true", "false"]:
 else:
     SLIENT = SLIENT.lower()
 
+if not MAP or MAP.lower() not in ["true", "false"]:
+    logger.warning("MAP is not defined in .env file, or not a boolean, using a default value false")
+    MAP = "false"
+else:
+    MAP = MAP.lower()
+
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID} and SLIENT: {SLIENT}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
 
@@ -140,6 +148,18 @@ def send_message(text):
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while sending message: {e}")
+        return None
+    return response.json()
+
+
+def send_map(text):
+    MAP_URL = "http://alerts.net.ua/alerts_map.png"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto?chat_id={CHAT_ID}&photo={urllib.parse.quote(MAP_URL)}&caption={text}&disable_notification={SLIENT}"
+    try:
+        response = requests.get(url, timeout=20)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error while sending alert map: {e}")
         return None
     return response.json()
 
@@ -173,6 +193,8 @@ def main():
 
                 if message != MESSAGE:
                     message += "\nЙобанарусня!"
+                    if MAP == "true":
+                        send_map("Йобанарусня!")
                     send_message(message)
 
                 last_data = data

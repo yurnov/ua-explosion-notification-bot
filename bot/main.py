@@ -109,8 +109,8 @@ else:
     REGION_LIST = [region.strip('"') for region in REGION_LIST]
 
 if not TIMEZONE:
-    logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev")
-    TIMEZONE = "Europe/Kiev"
+    logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kyiv")
+    TIMEZONE = "Europe/Kyiv"
 
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")

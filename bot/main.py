@@ -45,6 +45,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 URL = os.getenv("URL")
 REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") else None
 TIMEZONE = os.getenv("TIMEZONE")
+SLIENT = os.getenv("SLIENT")
 
 """
 Full list of regions:
@@ -112,7 +113,13 @@ if not TIMEZONE:
     logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev")
     TIMEZONE = "Europe/Kiev"
 
-logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
+if not SLIENT or SLIENT.lower not in lower["true", "false"]:
+    logger.warning("SLIENT is not defined in .env file, or not a boolean, using a default value false")
+    SLIENT = "false"
+else:
+    SLIENT = SLIENT.lower()
+
+logger.info(f"Bot started with CHAT_ID: {CHAT_ID} and SLIENT: {SLIENT}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
 
 
@@ -127,7 +134,7 @@ def get_data():
 
 
 def send_message(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&disable_notification={SLIENT}&text={text}"
     try:
         response = requests.get(url, timeout=20)
         response.raise_for_status()

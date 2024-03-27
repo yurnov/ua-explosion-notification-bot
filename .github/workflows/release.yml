@@ -71,5 +71,6 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           no-cache: true
           tags: |
-            ghcr.io/yurnov/explosion-notifier:master
+            ghcr.io/yurnov/explosion-notifier:latest
+            ghcr.io/yurnov/explosion-notifier:main
             ghcr.io/yurnov/explosion-notifier:${{ steps.tag_version.outputs.new_tag }}

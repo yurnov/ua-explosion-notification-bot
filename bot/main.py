@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 import time
 from datetime import datetime
 import pytz
-import urllib.parse
 
 """
 This is a simple telegram bot that every 30 secound get API http://alerts.net.ua/explosives_statuses_v2.json and send
@@ -48,6 +47,7 @@ REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") el
 TIMEZONE = os.getenv("TIMEZONE")
 SLIENT = os.getenv("SLIENT")
 MAP = os.getenv("MAP")
+MAP_URL = os.getenv("MAP_URL")
 
 """
 Full list of regions:
@@ -127,6 +127,10 @@ if not MAP or MAP.lower() not in ["true", "false"]:
 else:
     MAP = MAP.lower()
 
+if MAP == "true" and not MAP_URL:
+    logger.warning("MAP_URL is not defined in .env file, using a default URL http://alerts.net.ua/alerts_map.png")
+    MAP_URL = "http://alerts.net.ua/alerts_map.png"
+
 logger.info(f"Bot started with CHAT_ID: {CHAT_ID} and SLIENT: {SLIENT}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
 
@@ -142,9 +146,10 @@ def get_data():
 
 
 def send_message(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&disable_notification={SLIENT}&text={text}"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    params = {"chat_id": CHAT_ID, "text": text, "disable_notification": SLIENT}
     try:
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, params=params, timeout=20)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while sending message: {e}")
@@ -153,10 +158,18 @@ def send_message(text):
 
 
 def send_map(text):
-    MAP_URL = "http://alerts.net.ua/alerts_map.png"
-    url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto?chat_id={CHAT_ID}&photo={urllib.parse.quote(MAP_URL)}&caption={text}&disable_notification={SLIENT}"
+
     try:
-        response = requests.get(url, timeout=20)
+        alarm_map = requests.get(MAP_URL, timeout=15)
+        alarm_map.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error while getting map: {e}")
+        return None
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
+    params = {"chat_id": CHAT_ID, "caption": text, "disable_notification": SLIENT}
+    try:
+        response = requests.post(url, params=params, timeout=20, files={"photo": alarm_map.content})
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while sending alert map: {e}")

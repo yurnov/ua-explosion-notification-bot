@@ -112,8 +112,8 @@ else:
     REGION_LIST = [region.strip('"') for region in REGION_LIST]
 
 if not TIMEZONE:
-    logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kiev")
-    TIMEZONE = "Europe/Kiev"
+    logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kyiv")
+    TIMEZONE = "Europe/Kyiv"
 
 if not SLIENT or SLIENT.lower() not in ["true", "false"]:
     logger.warning("SLIENT is not defined in .env file, or not a boolean, using a default value false")

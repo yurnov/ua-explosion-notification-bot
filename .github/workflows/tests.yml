@@ -32,7 +32,7 @@ jobs:
 
       # - name: Lint Python code with black
       #   run: |
-      #     black --check --skip-string-normalization --line-length 120 bot
+      #     black --check --verbose --skip-string-normalization --line-length 120 bot
 
       - name: Lint Python code with Pylint
         run: |

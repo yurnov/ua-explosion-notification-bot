@@ -130,9 +130,29 @@ else:
 if MAP == "true" and not MAP_URL:
     logger.warning("MAP_URL is not defined in .env file, using a default URL http://alerts.net.ua/alerts_map.png")
     MAP_URL = "http://alerts.net.ua/alerts_map.png"
+else:
+    MAP_URL = MAP_URL.strip('"')
+    # ensure that MAP_URL is a valid URL with image (based on Content-Type)
+    try:
+        resp = requests.head(MAP_URL, timeout=15)
+        resp.raise_for_status()
+        if not resp.headers.get("Content-Type") or not resp.headers.get("Content-Type").startswith("image/"):
+            logger.error("MAP_URL is not a valid URL with image, set MAP to false")
+            MAP = "false"
+            del resp
+    except requests.exceptions.RequestException as err:
+        logger.error(f"Error while checking MAP_URL: {err}, set MAP to false")
+        MAP = "false"
+        del err
 
-logger.info(f"Bot started with CHAT_ID: {CHAT_ID} and SLIENT: {SLIENT}")
+if MAP == "true":
+    LOG_MAP = "MAP_URL is " + MAP_URL
+else:
+    LOG_MAP = "MAP is false"
+
+logger.info(f"Bot started with CHAT_ID: {CHAT_ID}, SLIENT: {SLIENT} and {LOG_MAP}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
+del LOG_MAP
 
 
 def get_data():

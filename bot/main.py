@@ -45,6 +45,9 @@ CHAT_ID = os.getenv("CHAT_ID")
 URL = os.getenv("URL")
 REGION_LIST = os.getenv("REGION_LIST").split(",") if os.getenv("REGION_LIST") else None
 TIMEZONE = os.getenv("TIMEZONE")
+SLIENT = os.getenv("SLIENT")
+MAP = os.getenv("MAP")
+MAP_URL = os.getenv("MAP_URL")
 
 """
 Full list of regions:
@@ -112,8 +115,44 @@ if not TIMEZONE:
     logger.warning("TIMEZONE is not defined in .env file, using a default timezone Europe/Kyiv")
     TIMEZONE = "Europe/Kyiv"
 
-logger.info(f"Bot started with CHAT_ID: {CHAT_ID}")
+if not SLIENT or SLIENT.lower() not in ["true", "false"]:
+    logger.warning("SLIENT is not defined in .env file, or not a boolean, using a default value false")
+    SLIENT = "false"
+else:
+    SLIENT = SLIENT.lower()
+
+if not MAP or MAP.lower() not in ["true", "false"]:
+    logger.warning("MAP is not defined in .env file, or not a boolean, using a default value false")
+    MAP = "false"
+else:
+    MAP = MAP.lower()
+
+if MAP == "true" and not MAP_URL:
+    logger.warning("MAP_URL is not defined in .env file, using a default URL http://alerts.net.ua/alerts_map.png")
+    MAP_URL = "http://alerts.net.ua/alerts_map.png"
+else:
+    MAP_URL = MAP_URL.strip('"')
+    # ensure that MAP_URL is a valid URL with image (based on Content-Type)
+    try:
+        resp = requests.head(MAP_URL, timeout=15)
+        resp.raise_for_status()
+        if not resp.headers.get("Content-Type") or not resp.headers.get("Content-Type").startswith("image/"):
+            logger.error("MAP_URL is not a valid URL with image, set MAP to false")
+            MAP = "false"
+            del resp
+    except requests.exceptions.RequestException as err:
+        logger.error(f"Error while checking MAP_URL: {err}, set MAP to false")
+        MAP = "false"
+        del err
+
+if MAP == "true":
+    LOG_MAP = "MAP_URL is " + MAP_URL
+else:
+    LOG_MAP = "MAP is false"
+
+logger.info(f"Bot started with CHAT_ID: {CHAT_ID}, SLIENT: {SLIENT} and {LOG_MAP}")
 logger.info(f"Following regions will be monitored: {REGION_LIST}")
+del LOG_MAP
 
 
 def get_data():
@@ -127,12 +166,33 @@ def get_data():
 
 
 def send_message(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={text}"
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    params = {"chat_id": CHAT_ID, "text": text, "disable_notification": SLIENT}
     try:
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, params=params, timeout=20)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logger.error(f"Error while sending message: {e}")
+        return None
+    return response.json()
+
+
+def send_map(text):
+
+    try:
+        alarm_map = requests.get(MAP_URL, timeout=15)
+        alarm_map.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error while getting map: {e}")
+        return None
+
+    url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
+    params = {"chat_id": CHAT_ID, "caption": text, "disable_notification": SLIENT}
+    try:
+        response = requests.post(url, params=params, timeout=20, files={"photo": alarm_map.content})
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error while sending alert map: {e}")
         return None
     return response.json()
 
@@ -166,6 +226,8 @@ def main():
 
                 if message != MESSAGE:
                     message += "\nЙобанарусня!"
+                    if MAP == "true":
+                        send_map("Йобанарусня!")
                     send_message(message)
 
                 last_data = data

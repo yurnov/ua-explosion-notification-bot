@@ -131,7 +131,8 @@ if MAP == "true" and not MAP_URL:
     logger.warning("MAP_URL is not defined in .env file, using a default URL http://alerts.net.ua/alerts_map.png")
     MAP_URL = "http://alerts.net.ua/alerts_map.png"
 else:
-    MAP_URL = MAP_URL.strip('"')
+    if MAP_URL:
+        MAP_URL = MAP_URL.strip('"')
     # ensure that MAP_URL is a valid URL with image (based on Content-Type)
     try:
         resp = requests.head(MAP_URL, timeout=15)
